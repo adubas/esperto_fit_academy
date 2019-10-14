@@ -4,7 +4,7 @@ class ClientsController < ApplicationController
   before_action :find_id, only: %i[show edit update verify_payments ]
   
   def index
-    @clients = Client.all 
+    @clients = Client.all.decorate 
   end
 
   def new
@@ -13,10 +13,9 @@ class ClientsController < ApplicationController
 
   def create
     @client = Client.new(client_params)
-
     if @client.save
-      flash[:notice] = 'Matriculado com sucesso!'
-      redirect_to @client
+      ClientMailer.send_welcome(@client.id).deliver_now
+      redirect_to @client, notice: 'Matriculado com sucesso!'
     else
       find_all
       render :new
@@ -29,6 +28,7 @@ class ClientsController < ApplicationController
 
   def update
     if @client.update(client_params)
+      NotifyClient.call(@client)
       redirect_to @client, notice: 'Atualizado com sucesso!'
     else
       find_all
@@ -38,7 +38,8 @@ class ClientsController < ApplicationController
 
   def ban
     @client = Client.find(params[:id])
-    @client.ban 
+    @client.banished!
+    NotifyClient.call(@client)
     redirect_to @client, notice: 'CPF banido com sucesso!'
   rescue ActiveRecord::RecordNotFound
     flash[:alert] = 'Não existe esse aluno!'

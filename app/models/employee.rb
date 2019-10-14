@@ -10,7 +10,8 @@ class Employee < ApplicationRecord
          :recoverable, :rememberable, :validatable
   validates :name, :status, :gym, :email,  presence: { message: 'deve ser preenchido!' }
   validates :email, uniqueness: { message: 'Email deve ser unico!' }
-  validate :corporative_email_constraint
+  
+  before_validation :corporative_email_constraint
 
   enum status: {unactive: 0, active: 1}
 
