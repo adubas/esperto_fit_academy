@@ -73,6 +73,6 @@ feature 'employee edit client' do
     click_on 'Lista de Alunos'
 
     expect(page).to have_content('Gabi')
-    expect(page).to have_content('October 2019')
+    expect(page).to have_content('November 2019')
   end
 end
