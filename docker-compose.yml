@@ -1,0 +1,23 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    volumes:
+      - Academy:/var/lib/postgresql/data
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    env_file:
+      - .env
+    volumes:
+      - .:/espertofit_academy
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+volumes:
+  Academy:
+networks:
+  default:
+    external:
+      name: espertofit
